@@ -23,14 +23,14 @@ export const createUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user =  User.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     // Verify password using Argon2
-    const isMatch =  argon2.verify(user.password, password);
+    const isMatch = await argon2.verify(user.password, password);
 
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
