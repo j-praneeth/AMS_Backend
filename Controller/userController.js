@@ -97,10 +97,10 @@ export const loginUser = async (req, res) => {
 //student login api
 export const loginStudent = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { rollnumber, password } = req.body;
 
     // Validate email input (roll number)
-    if (email.length !== 10) {
+    if (rollnumber.length !== 10) {
       return res.status(400).json({ message: "Invalid roll number format" });
     }
 
@@ -108,7 +108,7 @@ export const loginStudent = async (req, res) => {
     // const rollNumber = email;
 
     // Find the student by roll number
-    const student = await User.findOne({ email: email });
+    const student = await User.findOne({ rollnumber: rollnumber });
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
@@ -121,7 +121,7 @@ export const loginStudent = async (req, res) => {
 
     // Respond with student details
     res.status(200).json({
-      email: student.email,
+      rollnumber: student.rollnumber,
       name: student.name,
       gender: student.gender,
       role: "student", // Fixed role for this API
