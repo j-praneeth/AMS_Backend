@@ -13,9 +13,7 @@ export const createUser = async (req, res) => {
     await user.save();
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error creating user", error: error.message });
+    res.status(500).json({ message: "Error creating user", error: error.message });
   }
 };
 
@@ -37,6 +35,11 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Ensure only non-student roles can use this endpoint
+    if (user.role === "Student") {
+      return res.status(403).json({ message: "Students must log in using the roll number" });
+    }
+
     // Respond with user details (without token)
     res.status(200).json({
       email: user.email,
@@ -48,6 +51,27 @@ export const loginUser = async (req, res) => {
   }
 };
 
+// export const loginUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     const user =  await User.findOne({ email });
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Verify password using Argon2
+//     const isMatch = await argon2.verify(user.password, password);
+
+//     if (!isMatch) {
+//       return res.status(401).json({ message: "Invalid credentials" });
+//     }
+
+//     res.status(200).json({ message: "Login successful" });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error logging in", error: error.message });
+//   }
+// };
 
 // Get all users
 export const getUsers = async (req, res) => {
@@ -55,9 +79,7 @@ export const getUsers = async (req, res) => {
     const users = await User.find();
     res.status(200).json({ message: "Users fetched successfully", users });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching users", error: error.message });
+    res.status(500).json({ message: "Error fetching users", error: error.message });
   }
 };
 
@@ -71,9 +93,7 @@ export const getUserById = async (req, res) => {
     }
     res.status(200).json({ message: "User fetched successfully", user });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching user", error: error.message });
+    res.status(500).json({ message: "Error fetching user", error: error.message });
   }
 };
 
@@ -94,9 +114,7 @@ export const updateUser = async (req, res) => {
     }
     res.status(200).json({ message: "User updated successfully", user });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating user", error: error.message });
+    res.status(500).json({ message: "Error updating user", error: error.message });
   }
 };
 
@@ -110,8 +128,6 @@ export const deleteUser = async (req, res) => {
     }
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error deleting user", error: error.message });
+    res.status(500).json({ message: "Error deleting user", error: error.message });
   }
 };
