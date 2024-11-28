@@ -1,83 +1,36 @@
-// import mongoose from "mongoose";
-
-// const userSchema = new mongoose.Schema(
-//   {
-//     userID: {
-//       type: String,
-//       required: true,
-//       unique: true, // Ensures unique userID
-//     },
-//     name: {
-//       type: String,
-//       required: true,
-//       trim: true, // Removes extra spaces
-//     },
-//     role: {
-//       type: String,
-//       enum: ["Student", "Faculty", "Admin", "DEO"], // Restricts role to these values
-//       required: true,
-//     },
-//     email: {
-//       type: String,
-//       required: true,
-//       unique: true, // Ensures unique email
-//       lowercase: true, // Converts email to lowercase
-//       match: [/^\d{2}[A-Z]{2}\d{6}$/, 'Invalid roll number format'],
-//     },
-//     password: {
-//       type: String,
-//       required: true,
-//     },
-//     gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
-//   },
-//   { timestamps: true }
-// ); // Adds createdAt and updatedAt fields
-
-// export default mongoose.model("User", userSchema);
-
-
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
     userID: {
       type: String,
-      required: function() {
-        return this.role === 'Faculty' || this.role === 'Student'; // Required only for Faculty/Student
-      },
-      unique: true,
-      match: [/^\d{2}[A-Z]{2}\d{6}$/, 'Invalid roll number format'], // Roll number format
+      required: true,
+      unique: true, // Ensures unique userID
     },
     name: {
       type: String,
       required: true,
-      trim: true,
+      trim: true, // Removes extra spaces
     },
     role: {
       type: String,
-      enum: ["Student", "Faculty", "Admin", "DEO"],
+      enum: ["Student", "Faculty", "Admin", "DEO"], // Restricts role to these values
       required: true,
     },
     email: {
       type: String,
-      required: function() {
-        return this.role === 'Admin'; // Required only for Admin
-      },
-      unique: true,
-      lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, 'Invalid email format'], // Validates email format
+      required: true,
+      unique: true, // Ensures unique email
+      lowercase: true, // Converts email to lowercase
+      match: [/^\S+@\S+\.\S+$/, "Invalid email format"], // Validates email format
     },
     password: {
       type: String,
       required: true,
     },
-    gender: { 
-      type: String, 
-      enum: ["Male", "Female", "Other"], 
-      required: true 
-    },
+    gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
   },
   { timestamps: true }
-);
+); // Adds createdAt and updatedAt fields
 
 export default mongoose.model("User", userSchema);

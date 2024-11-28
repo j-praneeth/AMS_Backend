@@ -6,7 +6,6 @@ import {
   getUserById,
   getUsers,
   deleteUser,
-  loginStudent,
 } from "../Controller/userController.js";
 const router = express.Router();
 
