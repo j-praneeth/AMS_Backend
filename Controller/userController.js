@@ -25,7 +25,7 @@ export const loginUser = async (req, res) => {
   try {
     const { emailOrRollNo, password } = req.body;
 
-    // Check if the input is a valid email or roll number
+    // Check if the input is a valid email or roll number (userID)
     const isEmail = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(emailOrRollNo);
     let user;
 
@@ -33,7 +33,7 @@ export const loginUser = async (req, res) => {
       // If it's an email, find the user by email
       user = await User.findOne({ email: emailOrRollNo });
     } else {
-      // If it's not an email, assume it's a roll number
+      // If it's not an email, assume it's a roll number (userID)
       user = await User.findOne({ userID: emailOrRollNo });
     }
 
@@ -47,11 +47,12 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Respond with user details (without the password)
+    // Respond with user details (without password)
     res.status(200).json({
       email: user.email,
       name: user.name,
       gender: user.gender,
+      role: user.role, // Optional: include role if needed
     });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });

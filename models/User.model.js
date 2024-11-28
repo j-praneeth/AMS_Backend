@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true, // Ensures unique email
       lowercase: true, // Converts email to lowercase
-      match: [/^\S+@\S+\.\S+$/, "Invalid email format"], // Validates email format
+      match: [/^\d{2}[A-Z]{2}\d{6}$/, 'Invalid roll number format'],
     },
     password: {
       type: String,
