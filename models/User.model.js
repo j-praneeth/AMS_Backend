@@ -29,6 +29,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    rollNo: {
+      type: String,
+      required: true,
+      unique: true, // Ensure rollNo is unique
+      match: [/^\d{2}[A-Z]{2}\d{6}[A-Z\d]?$/, 'Invalid roll number format'],
+    },
     gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
   },
   { timestamps: true }
