@@ -142,6 +142,7 @@ export const createUser = async (req, res) => {
 // Login user with role-based logic
 
 // Login user with role-based logic and roll number validation for students
+// Login user with role-based logic and roll number validation for students
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -149,15 +150,20 @@ export const loginUser = async (req, res) => {
     // Validate roll number format for students
     const rollNumberRegex = /^\d{2}[A-Z]{2}\d{6}[A-Z\d]?$/;
 
-    // Find the user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    let user;
+
+    // Check if the provided email is a roll number (Student)
+    if (rollNumberRegex.test(email)) {
+      // Look for a Student with this roll number
+      user = await User.findOne({ email, role: "Student" });
+    } else {
+      // Otherwise, look for a user with a normal email (Faculty, Admin, DEO)
+      user = await User.findOne({ email });
     }
 
-    // If the user is a student, validate roll number format
-    if (user.role === "Student" && !rollNumberRegex.test(email)) {
-      return res.status(400).json({ message: "Invalid roll number format" });
+    // If user is not found
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Verify the password using Argon2
@@ -212,6 +218,7 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
+
 
 
 
