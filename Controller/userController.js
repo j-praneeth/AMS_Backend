@@ -23,21 +23,12 @@ export const createUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { emailOrRollNo, password } = req.body;
+    const { email, password } = req.body;
 
-    // Determine if the user is an admin or not
-    let user;
-    
-    // If the user is an admin, log in by email
-    if (/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(emailOrRollNo)) {
-      user = await User.findOne({ email: emailOrRollNo, role: "Admin" });
-    } else {
-      // Otherwise, it's a roll number (userID) and should match either student or faculty
-      user = await User.findOne({ userID: emailOrRollNo, role: { $in: ["Faculty", "Student"] } });
-    }
-
+    // Find the user by email
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found or incorrect role" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Verify the password using Argon2
@@ -46,12 +37,11 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Respond with user details (excluding password)
+    // Respond with user details (without token)
     res.status(200).json({
       email: user.email,
       name: user.name,
-      gender: user.gender,
-      role: user.role, // Include role in the response
+      department: user.department,
     });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
