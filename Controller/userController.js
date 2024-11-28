@@ -55,23 +55,22 @@ export const loginUser = async (req, res) => {
     // Check if the input is a student roll number starting with a pattern like '22AG1A'
     // const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[A-Za-z0-9]*$/; // Match '22AG1A' and anything after it
     const isStudent = email.length === 10;
-    const emailLowerCase=email.toLowerCase();
     // Identify user role (student, faculty, admin, dean) based on email format
     let userRole = "";
     if (isStudent) {
       userRole = "student";
-    } else if (emailLowerCase.includes("faculty")) {
+    } else if (email.includes("faculty")) {
       userRole = "faculty";
-    } else if (emailLowerCase.includes("admin")) {
+    } else if (email.includes("admin")) {
       userRole = "admin";
-    } else if (emailLowerCase.includes("deo")) {
+    } else if (email.includes("deo")) {
       userRole = "deo";
     } else {
       return res.status(400).json({ message: "Invalid login format" });
     }
 
     // Find the user by email or roll number
-    const user = isStudent ? await User.findOne({ email: emailLowerCase }) : await User.findOne({ email });
+    const user = isStudent ? await User.findOne({ email: email }) : await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -94,6 +93,43 @@ export const loginUser = async (req, res) => {
   }
 };
 
+
+//student login api
+export const loginStudent = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate email input (roll number)
+    if (!email || typeof email !== "string" || email.length !== 10) {
+      return res.status(400).json({ message: "Invalid roll number format" });
+    }
+
+    // Convert email to lowercase for consistency
+    const rollNumber = email.toLowerCase();
+
+    // Find the student by roll number
+    const student = await User.findOne({ email: rollNumber });
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Verify the password using Argon2
+    const isMatch = await argon2.verify(student.password, password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Respond with student details
+    res.status(200).json({
+      email: student.email,
+      name: student.name,
+      gender: student.gender,
+      role: "student", // Fixed role for this API
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error logging in", error: error.message });
+  }
+};
  // Assuming you're using Mongoose and the User model is in this path
 
 
