@@ -154,7 +154,7 @@ export const studentLogin = async (req, res) => {
     console.log("Sanitized roll number:", sanitizedRollNo);
 
     // Find the student by roll number
-    const student = await User.findOne({ email: sanitizedRollNo, role: "Student" });
+    const student = await User.findOne({ rollNo: sanitizedRollNo, role: "Student" });
     console.log("Query result:", student);
 
     if (!student) {
@@ -171,7 +171,7 @@ export const studentLogin = async (req, res) => {
     res.status(200).json({
       message: "Welcome, Student!",
       role: student.role,
-      rollNo: student.email,
+      rollNo: student.rollNo,
       name: student.name,
     });
   } catch (error) {
