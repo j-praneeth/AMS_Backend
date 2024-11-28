@@ -71,7 +71,7 @@ export const loginUser = async (req, res) => {
     }
 
     // Find the user by email or roll number
-    const user = isStudent ? await User.findOne({ rollNumber: email }) : await User.findOne({ email });
+    const user = isStudent ? await User.findOne({ email: email }) : await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
