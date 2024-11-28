@@ -21,13 +21,57 @@ export const createUser = async (req, res) => {
 
 // Login user
 
+// export const loginUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Find the user by email
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Verify the password using Argon2
+//     const isMatch = await argon2.verify(user.password, password);
+//     if (!isMatch) {
+//       return res.status(401).json({ message: "Invalid credentials" });
+//     }
+
+//     // Respond with user details (without token)
+//     res.status(200).json({
+//       email: user.email,
+//       name: user.name,
+//       gender: user.gender,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error logging in", error: error.message });
+//   }
+// };
 
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find the user by email
-    const user = await User.findOne({ email });
+    // Check if the input is a student roll number using regex
+    const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[0-9]{2}[A-Za-z]{1}$/; // Example: 22AG1A66B7
+    const isStudent = studentRollNumberRegex.test(email);
+
+    // Identify user role (student, faculty, admin, dean) based on email format
+    let userRole = "";
+    if (isStudent) {
+      userRole = "student";
+    } else if (email.includes("faculty")) {
+      userRole = "faculty";
+    } else if (email.includes("admin")) {
+      userRole = "admin";
+    } else if (email.includes("dean")) {
+      userRole = "dean";
+    } else {
+      return res.status(400).json({ message: "Invalid login format" });
+    }
+
+    // Find the user by email or roll number
+    const user = isStudent ? await User.findOne({ rollNumber: email }) : await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -38,16 +82,18 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Respond with user details (without token)
+    // Respond with user details and role
     res.status(200).json({
       email: user.email,
       name: user.name,
       gender: user.gender,
+      // role: userRole, // Send the user's role
     });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
+
 
 
 // Get all users
