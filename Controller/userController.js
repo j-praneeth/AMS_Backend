@@ -20,27 +20,63 @@ export const createUser = async (req, res) => {
 };
 
 // Login user
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
 
+    // Find the user by email
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Verify password using Argon2
+    // Verify the password using Argon2
     const isMatch = await argon2.verify(user.password, password);
-
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    res.status(200).json({ message: "Login successful" });
+    // Generate a JWT token
+    const token = jwt.sign(
+      { id: user._id, email: user.email }, // Payload
+      process.env.JWT_SECRET, // Secret key (ensure it's stored securely in your environment variables)
+      { expiresIn: '1h' } // Token expiration time
+    );
+
+    // Respond with user details and token
+    res.status(200).json({
+      email: user.email,
+      name: user.name,
+      department: user.department,
+      token: token,
+    });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
+
+// export const loginUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     const user = await User.findOne({ email });
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Verify password using Argon2
+//     const isMatch = await argon2.verify(user.password, password);
+
+//     if (!isMatch) {
+//       return res.status(401).json({ message: "Invalid credentials" });
+//     }
+
+//     res.status(200).json({ message: "Login successful" });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error logging in", error: error.message });
+//   }
+// };
 
 // Get all users
 export const getUsers = async (req, res) => {
