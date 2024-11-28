@@ -52,7 +52,6 @@ export const loginUser = async (req, res) => {
       email: user.email,
       name: user.name,
       gender: user.gender,
-      role: user.role, // Optional: include role if needed
     });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
