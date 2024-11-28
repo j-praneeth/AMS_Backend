@@ -227,7 +227,7 @@ export const studentLogin = async (req, res) => {
     const sanitizedRollNo = rollNo.toUpperCase();
     console.log("Sanitized roll number:", sanitizedRollNo);
 
-    // Find the student by roll number (assuming 'rollNo' is in the database)
+    // Find the student by roll number
     const student = await User.findOne({ rollNo: sanitizedRollNo, role: "Student" });
     console.log("Query result:", student);
 
