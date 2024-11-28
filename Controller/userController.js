@@ -100,24 +100,27 @@ export const loginStudent = async (req, res) => {
   try {
     const { rollnumber, password } = req.body;
 
+    // Validate roll number length (ensure it's the correct format)
     if (rollnumber.length !== 10) {
       return res.status(400).json({ message: "Invalid roll number format" });
     }
 
-    const student = await User.findOne({ email: rollnumber });
+    // Find the student by rollnumber (not email)
+    const student = await User.findOne({ rollnumber: rollnumber });
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
 
+    // Verify the password using Argon2
     const isMatch = await argon2.verify(student.password, password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Consistent response structure with role and user info
+    // Respond with student details and role
     res.status(200).json({
-      rollnumber: student.email, // Make sure roll number is mapped correctly
+      rollnumber: student.rollnumber, // Ensure you're using the correct field
       name: student.name,
       gender: student.gender,
       role: "student", // Fixed role for this API
@@ -126,6 +129,7 @@ export const loginStudent = async (req, res) => {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
+
 
 
 // export const loginUser = async (req, res) => {
