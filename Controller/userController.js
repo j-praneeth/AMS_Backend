@@ -55,23 +55,23 @@ export const loginUser = async (req, res) => {
     // Check if the input is a student roll number starting with a pattern like '22AG1A'
     // const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[A-Za-z0-9]*$/; // Match '22AG1A' and anything after it
     const isStudent = email.length === 10;
-
+    const emailLowerCase=email.toLoweCase();
     // Identify user role (student, faculty, admin, dean) based on email format
     let userRole = "";
     if (isStudent) {
       userRole = "student";
-    } else if (email.includes("faculty")) {
+    } else if (emailLowerCase.includes("faculty")) {
       userRole = "faculty";
-    } else if (email.includes("admin")) {
+    } else if (emailLowerCase.includes("admin")) {
       userRole = "admin";
-    } else if (email.includes("deo")) {
+    } else if (emailLowerCase.includes("deo")) {
       userRole = "deo";
     } else {
       return res.status(400).json({ message: "Invalid login format" });
     }
 
     // Find the user by email or roll number
-    const user = isStudent ? await User.findOne({ email: email }) : await User.findOne({ email });
+    const user = isStudent ? await User.findOne({ email: emailLowerCase }) : await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
