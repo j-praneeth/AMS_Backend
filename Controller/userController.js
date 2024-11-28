@@ -1,5 +1,6 @@
 import User from "../models/User.model.js";
 import argon2 from "argon2";
+import jwt from 'jsonwebtoken';
 
 // Create a new user
 export const createUser = async (req, res) => {
