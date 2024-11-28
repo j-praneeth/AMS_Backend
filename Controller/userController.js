@@ -19,24 +19,69 @@ export const createUser = async (req, res) => {
   }
 };
 
-// Login user
+// Login user with role-based logic
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user =  await User.findOne({ email });
 
+    // Find the user by email
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Verify password using Argon2
+    // Verify the password using Argon2
     const isMatch = await argon2.verify(user.password, password);
-
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    res.status(200).json({ message: "Login successful" });
+    // Handle role-based logic
+    switch (user.role) {
+      case "Student":
+        // Logic specific to students
+        res.status(200).json({
+          message: "Welcome, Student!",
+          role: user.role,
+          email: user.email,
+          name: user.name,
+        });
+        break;
+
+      case "Faculty":
+        // Logic specific to faculty
+        res.status(200).json({
+          message: "Welcome, Faculty!",
+          role: user.role,
+          email: user.email,
+          name: user.name,
+        });
+        break;
+
+      case "Admin":
+        // Logic specific to admin
+        res.status(200).json({
+          message: "Welcome, Admin!",
+          role: user.role,
+          email: user.email,
+          name: user.name,
+        });
+        break;
+
+      case "DEO":
+        // Logic specific to DEO
+        res.status(200).json({
+          message: "Welcome, DEO!",
+          role: user.role,
+          email: user.email,
+          name: user.name,
+        });
+        break;
+
+      default:
+        res.status(403).json({ message: "Unauthorized role" });
+        break;
+    }
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
