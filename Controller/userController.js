@@ -144,7 +144,8 @@ export const studentLogin = async (req, res) => {
     const { rollNo, password } = req.body;
 
     // Validate roll number format
-    const rollNoRegex = /^\d{2}[A-Z]{2}\d{6}$/;
+    const rollNoRegex = /^[A-Z0-9]+$/;
+
     if (!rollNoRegex.test(rollNo)) {
       return res.status(400).json({ message: "Invalid roll number format" });
     }
