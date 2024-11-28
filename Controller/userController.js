@@ -100,15 +100,15 @@ export const loginStudent = async (req, res) => {
     const { email, password } = req.body;
 
     // Validate email input (roll number)
-    if (!email || typeof email !== "string" || email.length !== 10) {
+    if (email.length !== 10) {
       return res.status(400).json({ message: "Invalid roll number format" });
     }
 
     // Convert email to lowercase for consistency
-    const rollNumber = email.toLowerCase();
+    // const rollNumber = email;
 
     // Find the student by roll number
-    const student = await User.findOne({ email: rollNumber });
+    const student = await User.findOne({ email: email });
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
