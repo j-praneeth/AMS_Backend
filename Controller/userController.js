@@ -120,10 +120,10 @@ export const loginStudent = async (req, res) => {
 
     // Respond with student details and role
     res.status(200).json({
-      rollnumber: student.rollnumber, // Ensure you're using the correct field
+    
       name: student.name,
       gender: student.gender,
-      id: student.id,         // Add the missing ID field
+      id: student.rollnumber,         // Add the missing ID field
       department: "Computer Science",// Add the missing department field
       role: "student", // Fixed role for this API
     });
