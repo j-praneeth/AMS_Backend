@@ -48,30 +48,58 @@ export const createUser = async (req, res) => {
 //   }
 // };
 
+// export const loginUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Check if the input is a student roll number starting with a pattern like '22AG1A'
+//     const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[A-Za-z0-9]*$/; // Match '22AG1A' and anything after it
+//     const isStudent = studentRollNumberRegex.test(email);
+
+//     // Identify user role (student, faculty, admin, dean) based on email format
+//     let userRole = "";
+//     if (isStudent) {
+//       userRole = "student";
+//     } else if (email.includes("faculty")) {
+//       userRole = "faculty";
+//     } else if (email.includes("admin")) {
+//       userRole = "admin";
+//     } else if (email.includes("deo")) {
+//       userRole = "deo";
+//     } else {
+//       return res.status(400).json({ message: "Invalid login format" });
+//     }
+
+//     // Find the user by email or roll number
+//     const user = isStudent ? await User.findOne({ rollNumber: email }) : await User.findOne({ email });
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Verify the password using Argon2
+//     const isMatch = await argon2.verify(user.password, password);
+//     if (!isMatch) {
+//       return res.status(401).json({ message: "Invalid credentials" });
+//     }
+
+//     // Respond with user details and role
+//     res.status(200).json({
+//       email: user.email,
+//       name: user.name,
+//       gender: user.gender,
+//       role: userRole, // Send the user's role
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error logging in", error: error.message });
+//   }
+// };
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if the input is a student roll number starting with a pattern like '22AG1A'
-    const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[A-Za-z0-9]*$/; // Match '22AG1A' and anything after it
-    const isStudent = studentRollNumberRegex.test(email);
-
-    // Identify user role (student, faculty, admin, dean) based on email format
-    let userRole = "";
-    if (isStudent) {
-      userRole = "student";
-    } else if (email.includes("faculty")) {
-      userRole = "faculty";
-    } else if (email.includes("admin")) {
-      userRole = "admin";
-    } else if (email.includes("deo")) {
-      userRole = "deo";
-    } else {
-      return res.status(400).json({ message: "Invalid login format" });
-    }
-
-    // Find the user by email or roll number
-    const user = isStudent ? await User.findOne({ rollNumber: email }) : await User.findOne({ email });
+    // Find the user by email (no regex for student roll number)
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -82,18 +110,17 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Respond with user details and role
+    // Send response with user details and their role
     res.status(200).json({
       email: user.email,
       name: user.name,
       gender: user.gender,
-      role: userRole, // Send the user's role
+      role: user.role, // Send the user's role (Admin, Faculty, DEO, or Student)
     });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
-
 
 
 
