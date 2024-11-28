@@ -55,7 +55,7 @@ export const loginUser = async (req, res) => {
     // Check if the input is a student roll number starting with a pattern like '22AG1A'
     // const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[A-Za-z0-9]*$/; // Match '22AG1A' and anything after it
     const isStudent = email.length === 10;
-    const emailLowerCase=email.toLoweCase();
+    const emailLowerCase=email.toLowerCase();
     // Identify user role (student, faculty, admin, dean) based on email format
     let userRole = "";
     if (isStudent) {
