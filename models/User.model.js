@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -23,16 +22,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true, // Ensures unique email
       lowercase: true, // Converts email to lowercase
-      match: [/^\d{2}[A-Z]{2}\d{6}[A-Z\d]?$/, 'Invalid roll number format'],
+      match: [/^\d{2}[A-Z]{2}\d{6}$/, 'Invalid roll number format'],
     },
     password: {
       type: String,
       required: true,
-    },
-    rollNo: {
-      type: String,
-      required: true,
-      unique: true,
     },
     gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
   },
