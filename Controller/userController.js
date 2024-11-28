@@ -94,6 +94,8 @@ export const createUser = async (req, res) => {
 //   }
 // };
 
+ // Assuming you're using Mongoose and the User model is in this path
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -114,17 +116,49 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Send response with user details and their role
-    res.status(200).json({
-      email: user.email,
-      name: user.name,
-      gender: user.gender,
-      role: user.role, // Send the user's role (Admin, Faculty, DEO, or Student)
-    });
+    // Handle different roles after successful login
+    if (user.role === 'Admin') {
+      res.status(200).json({
+        message: 'Admin logged in successfully',
+        email: user.email,
+        name: user.name,
+        gender: user.gender,
+        role: user.role,
+      });
+    } else if (user.role === 'Faculty') {
+      res.status(200).json({
+        message: 'Faculty logged in successfully',
+        email: user.email,
+        name: user.name,
+        gender: user.gender,
+        role: user.role,
+      });
+    } else if (user.role === 'DEO') {
+      res.status(200).json({
+        message: 'DEO logged in successfully',
+        email: user.email,
+        name: user.name,
+        gender: user.gender,
+        role: user.role,
+      });
+    } else if (user.role === 'Student' && isStudent) {
+      res.status(200).json({
+        message: 'Student logged in successfully',
+        email: user.email,
+        name: user.name,
+        gender: user.gender,
+        role: user.role,
+      });
+    } else {
+      res.status(400).json({ message: 'Unknown role or incorrect email format' });
+    }
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
+
+
+
 
 
 
