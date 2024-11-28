@@ -100,12 +100,12 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if the email length is 10 characters, which is unique to students
-    const isStudent = email.length === 10;
+    // Check if the email is likely a student email by checking if it has a length of 10 characters
+    const isStudent = email.length === 10; // Student email length is 10
 
     // Find the user by email (works for all roles, including student)
     const user = await User.findOne({ email: email });
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -156,8 +156,6 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
-
-
 
 
 
