@@ -20,7 +20,6 @@ export const createUser = async (req, res) => {
 };
 
 // Student Login API
-
 export const loginStudent = async (req, res) => {
   try {
     const { email, password } = req.body;
