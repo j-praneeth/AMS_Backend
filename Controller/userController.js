@@ -1,6 +1,5 @@
 import User from "../models/User.model.js";
 import argon2 from "argon2";
-import jwt from 'jsonwebtoken';
 
 // Create a new user
 export const createUser = async (req, res) => {
@@ -38,19 +37,11 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign(
-      { id: user._id, email: user.email }, // Payload
-      process.env.JWT_SECRET, // Secret key (ensure it's stored securely in your environment variables)
-      { expiresIn: '1h' } // Token expiration time
-    );
-
-    // Respond with user details and token
+    // Respond with user details (without token)
     res.status(200).json({
       email: user.email,
       name: user.name,
       department: user.department,
-      token: token,
     });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
