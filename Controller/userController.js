@@ -64,8 +64,8 @@ export const loginUser = async (req, res) => {
       userRole = "faculty";
     } else if (email.includes("admin")) {
       userRole = "admin";
-    } else if (email.includes("dean")) {
-      userRole = "dean";
+    } else if (email.includes("deo")) {
+      userRole = "deo";
     } else {
       return res.status(400).json({ message: "Invalid login format" });
     }
