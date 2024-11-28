@@ -17,7 +17,6 @@ router.get("/:id", getUserById); // Get a user by ID
 router.put("/:id", updateUser); // Update a user by ID
 router.delete("/:id", deleteUser); // Delete a user by ID
 router.post("/login", loginUser); // Login a user
-router.post('/loginstudent',loginStudent);//Login a student
 
 router.get("/", (req, res) => {
   res.send("User route is working!");
