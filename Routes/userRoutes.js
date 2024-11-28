@@ -6,8 +6,6 @@ import {
   getUserById,
   getUsers,
   deleteUser,
-  studentLogin,
-  loginStudent,
 } from "../Controller/userController.js";
 const router = express.Router();
 
@@ -18,7 +16,6 @@ router.get("/:id", getUserById); // Get a user by ID
 router.put("/:id", updateUser); // Update a user by ID
 router.delete("/:id", deleteUser); // Delete a user by ID
 router.post("/login", loginUser); // Login a user
-// router.post("/studentLogin", studentLogin);//Student login by roll no
 
 router.get("/", (req, res) => {
   res.send("User route is working!");
