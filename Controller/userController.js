@@ -145,18 +145,23 @@ export const studentLogin = async (req, res) => {
 
     // Validate roll number format
     const rollNoRegex = /^[A-Z0-9]+$/;
-
     if (!rollNoRegex.test(rollNo)) {
       return res.status(400).json({ message: "Invalid roll number format" });
     }
 
+    // Convert roll number to uppercase for consistency
+    const sanitizedRollNo = rollNo.toUpperCase();
+    console.log("Sanitized roll number:", sanitizedRollNo);
+
     // Find the student by roll number
-    const student = await User.findOne({ email: rollNo, role: "Student" });
+    const student = await User.findOne({ email: sanitizedRollNo, role: "Student" });
+    console.log("Query result:", student);
+
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    // Verify the password using Argon2
+    // Verify the password
     const isMatch = await argon2.verify(student.password, password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -166,7 +171,7 @@ export const studentLogin = async (req, res) => {
     res.status(200).json({
       message: "Welcome, Student!",
       role: student.role,
-      rollNo: student.email, // Roll number is stored in the email field
+      rollNo: student.email,
       name: student.name,
     });
   } catch (error) {
