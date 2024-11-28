@@ -52,8 +52,8 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if the input is a student roll number using regex
-    const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[0-9]{2}[A-Za-z]{1}$/; // Example: 22AG1A66B7
+    // Check if the input is a student roll number starting with a pattern like '22AG1A'
+    const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[A-Za-z0-9]*$/; // Match '22AG1A' and anything after it
     const isStudent = studentRollNumberRegex.test(email);
 
     // Identify user role (student, faculty, admin, dean) based on email format
@@ -93,6 +93,7 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
+
 
 
 
