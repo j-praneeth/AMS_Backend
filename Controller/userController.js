@@ -48,15 +48,16 @@ export const createUser = async (req, res) => {
 //   }
 // };
 
+// Login USER
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Check if the input is a student roll number starting with a pattern like '22AG1A'
-    // const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[A-Za-z0-9]*$/; // Match '22AG1A' and anything after it
     const isStudent = email.length === 10;
-    // Identify user role (student, faculty, admin, dean) based on email format
     let userRole = "";
+
     if (isStudent) {
       userRole = "student";
     } else if (email.includes("faculty")) {
@@ -71,6 +72,7 @@ export const loginUser = async (req, res) => {
 
     // Find the user by email or roll number
     const user = isStudent ? await User.findOne({ email: email }) : await User.findOne({ email });
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -81,47 +83,41 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Respond with user details and role
+    // Respond with consistent fields (name, email, gender, role)
     res.status(200).json({
       email: user.email,
       name: user.name,
       gender: user.gender,
-      role: userRole, // Send the user's role
+      role: userRole, // Ensure the role is included
     });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
 
-
-//student login api
+// Adjusted student login function
 export const loginStudent = async (req, res) => {
   try {
     const { rollnumber, password } = req.body;
 
-    // Validate email input (roll number)
     if (rollnumber.length !== 10) {
       return res.status(400).json({ message: "Invalid roll number format" });
     }
 
-    // Convert email to lowercase for consistency
-    // const rollNumber = email;
+    const student = await User.findOne({ email: rollnumber });
 
-    // Find the student by roll number
-    const student = await User.findOne({ rollnumber: rollnumber });
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    // Verify the password using Argon2
     const isMatch = await argon2.verify(student.password, password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Respond with student details
+    // Consistent response structure with role and user info
     res.status(200).json({
-      rollnumber: student.rollnumber,
+      rollnumber: student.email, // Make sure roll number is mapped correctly
       name: student.name,
       gender: student.gender,
       role: "student", // Fixed role for this API
@@ -130,6 +126,90 @@ export const loginStudent = async (req, res) => {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
+
+
+// export const loginUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Check if the input is a student roll number starting with a pattern like '22AG1A'
+//     // const studentRollNumberRegex = /^[0-9]{2}[A-Za-z]{2}[0-9]{1}[A-Za-z]{1}[A-Za-z0-9]*$/; // Match '22AG1A' and anything after it
+//     const isStudent = email.length === 10;
+//     // Identify user role (student, faculty, admin, dean) based on email format
+//     let userRole = "";
+//     if (isStudent) {
+//       userRole = "student";
+//     } else if (email.includes("faculty")) {
+//       userRole = "faculty";
+//     } else if (email.includes("admin")) {
+//       userRole = "admin";
+//     } else if (email.includes("deo")) {
+//       userRole = "deo";
+//     } else {
+//       return res.status(400).json({ message: "Invalid login format" });
+//     }
+
+//     // Find the user by email or roll number
+//     const user = isStudent ? await User.findOne({ email: email }) : await User.findOne({ email });
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Verify the password using Argon2
+//     const isMatch = await argon2.verify(user.password, password);
+//     if (!isMatch) {
+//       return res.status(401).json({ message: "Invalid credentials" });
+//     }
+
+//     // Respond with user details and role
+//     res.status(200).json({
+//       email: user.email,
+//       name: user.name,
+//       gender: user.gender,
+//       role: userRole, // Send the user's role
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error logging in", error: error.message });
+//   }
+// };
+
+
+// //student login api
+// export const loginStudent = async (req, res) => {
+//   try {
+//     const { rollnumber, password } = req.body;
+
+//     // Validate email input (roll number)
+//     if (rollnumber.length !== 10) {
+//       return res.status(400).json({ message: "Invalid roll number format" });
+//     }
+
+//     // Convert email to lowercase for consistency
+//     // const rollNumber = email;
+
+//     // Find the student by roll number
+//     const student = await User.findOne({ rollnumber: rollnumber });
+//     if (!student) {
+//       return res.status(404).json({ message: "Student not found" });
+//     }
+
+//     // Verify the password using Argon2
+//     const isMatch = await argon2.verify(student.password, password);
+//     if (!isMatch) {
+//       return res.status(401).json({ message: "Invalid credentials" });
+//     }
+
+//     // Respond with student details
+//     res.status(200).json({
+//       rollnumber: student.rollnumber,
+//       name: student.name,
+//       gender: student.gender,
+//       role: "student", // Fixed role for this API
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error logging in", error: error.message });
+//   }
+// };
  // Assuming you're using Mongoose and the User model is in this path
 
 
