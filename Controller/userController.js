@@ -19,13 +19,80 @@ export const createUser = async (req, res) => {
   }
 };
 
+// Student Login API
+
+export const loginStudent = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate email input (roll number)
+    if (!email || typeof email !== "string" || email.length !== 10) {
+      return res.status(400).json({ message: "Invalid roll number format" });
+    }
+
+    // Convert email to lowercase for consistency
+    const rollNumber = email.toLowerCase();
+
+    // Find the student by roll number
+    const student = await User.findOne({ email: rollNumber });
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Verify the password using Argon2
+    const isMatch = await argon2.verify(student.password, password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Respond with student details
+    res.status(200).json({
+      email: student.email,
+      name: student.name,
+      gender: student.gender,
+      role: "student", // Fixed role for this API
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error logging in", error: error.message });
+  }
+};
+
+
 // Login user with role-based logic
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find the user by email
-    const user = await User.findOne({ email });
+    // Ensure email is provided and valid
+    if (!email || typeof email !== "string") {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    // Convert email to lowercase for consistent comparisons
+    const emailLowerCase = email.toLowerCase();
+
+    // Check if the input is a student roll number (10 characters)
+    const isStudent = emailLowerCase.length === 10;
+
+    // Identify user role based on email format
+    let userRole = "";
+    if (isStudent) {
+      userRole = "student";
+    } else if (emailLowerCase.includes("faculty")) {
+      userRole = "faculty";
+    } else if (emailLowerCase.includes("admin")) {
+      userRole = "admin";
+    } else if (emailLowerCase.includes("deo")) {
+      userRole = "deo";
+    } else {
+      return res.status(400).json({ message: "Invalid login format" });
+    }
+
+    // Find the user by email or roll number
+    const user = isStudent
+      ? await User.findOne({ email: emailLowerCase }) // For students, use email (roll number)
+      : await User.findOne({ email: emailLowerCase }); // For others, use email directly
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -36,56 +103,18 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Handle role-based logic
-    switch (user.role) {
-      case "Student":
-        // Logic specific to students
-        res.status(200).json({
-          message: "Welcome, Student!",
-          role: user.role,
-          email: user.email,
-          name: user.name,
-        });
-        break;
-
-      case "Faculty":
-        // Logic specific to faculty
-        res.status(200).json({
-          message: "Welcome, Faculty!",
-          role: user.role,
-          email: user.email,
-          name: user.name,
-        });
-        break;
-
-      case "Admin":
-        // Logic specific to admin
-        res.status(200).json({
-          message: "Welcome, Admin!",
-          role: user.role,
-          email: user.email,
-          name: user.name,
-        });
-        break;
-
-      case "DEO":
-        // Logic specific to DEO
-        res.status(200).json({
-          message: "Welcome, DEO!",
-          role: user.role,
-          email: user.email,
-          name: user.name,
-        });
-        break;
-
-      default:
-        res.status(403).json({ message: "Unauthorized role" });
-        break;
-    }
+    // Respond with user details and role
+    res.status(200).json({
+      email: user.email,
+      name: user.name,
+      gender: user.gender,
+      role: userRole, // Send the user's role
+    });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
+
 
 // Get all users
 export const getUsers = async (req, res) => {
