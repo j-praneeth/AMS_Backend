@@ -31,10 +31,13 @@ export const loginStudent = async (req, res) => {
     }
 
     // Convert email to lowercase for consistency
-    const rollNumber = email.toLowerCase();
+    const rollNumber = email.toUpperCase();
 
-    // Find the student by roll number
-    const student = await User.findOne({ email: rollNumber });
+    // Debugging log
+    console.log("Roll number (email):", rollNumber);
+
+    // Find the student by roll number with case-insensitive search
+    const student = await User.findOne({ email: { $regex: new RegExp(`^${rollNumber}$`, 'i') } });
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
