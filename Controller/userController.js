@@ -29,7 +29,7 @@ export const loginStudent = async (req, res) => {
       return res.status(400).json({ message: "Invalid roll number format" });
     }
 
-    // Convert email to lowercase for consistency
+    // Convert email to UpperCase for consistency
     const rollNumber = email.toUpperCase();
 
     // Debugging log
@@ -107,6 +107,7 @@ export const loginUser = async (req, res) => {
 
     // Respond with user details and role
     res.status(200).json({
+      userId:user.userID,
       email: user.email,
       name: user.name,
       gender: user.gender,
