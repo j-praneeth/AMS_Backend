@@ -7,6 +7,9 @@ import {
   getUsers,
   deleteUser,
   loginStudent,
+  resetPassword,
+  resetPasswordStudent,
+  resetPasswordOtherRoles,
 } from "../Controller/userController.js";
 const router = express.Router();
 
@@ -18,6 +21,8 @@ router.put("/:id", updateUser); // Update a user by ID
 router.delete("/:id", deleteUser); // Delete a user by ID
 router.post("/login", loginUser); // Login a user
 router.post("/loginStudent",loginStudent)// Students login API call
+router.post("/reset-password/student", resetPasswordStudent);
+router.post("/reset-password/roles", resetPasswordOtherRoles);
 
 router.get("/", (req, res) => {
   res.send("User route is working!");

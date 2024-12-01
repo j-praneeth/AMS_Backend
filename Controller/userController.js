@@ -59,6 +59,76 @@ export const loginStudent = async (req, res) => {
   }
 };
 
+// Reset password for Students
+export const resetPasswordStudent = async (req, res) => {
+  try {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    // Validate inputs
+    if (!email || typeof email !== "string" || email.length !== 10) {
+      return res.status(400).json({ message: "Invalid roll number format" });
+    }
+    if (!newPassword || !confirmPassword || newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    // Convert roll number to uppercase for consistency
+    const rollNumber = rollNumber.toUpperCase();
+
+    // Find the student by roll number
+    const student = await User.findOne({ email: rollNumber });
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Hash the new password
+    const hashedPassword = await argon2.hash(newPassword);
+
+    // Update the password
+    student.password = hashedPassword;
+    await student.save();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error resetting password", error: error.message });
+  }
+};
+
+//Faculty and other roles Reset login
+export const resetPasswordOtherRoles = async (req, res) => {
+  try {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    // Validate inputs
+    if (!email || typeof email !== "string" || !email.includes("@")) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+    if (!newPassword || !confirmPassword || newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    // Convert email to lowercase for consistency
+    const formattedEmail = email.toLowerCase();
+
+    // Find the user by email
+    const user = await User.findOne({ email: formattedEmail });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Hash the new password
+    const hashedPassword = await argon2.hash(newPassword);
+
+    // Update the password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error resetting password", error: error.message });
+  }
+};
+
 
 // Login user with role-based logic
 export const loginUser = async (req, res) => {
