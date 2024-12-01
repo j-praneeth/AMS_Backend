@@ -7,7 +7,6 @@ import {
   getUsers,
   deleteUser,
   loginStudent,
-  resetPassword,
   resetPasswordStudent,
   resetPasswordOtherRoles,
 } from "../Controller/userController.js";
