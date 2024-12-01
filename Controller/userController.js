@@ -73,7 +73,7 @@ export const resetPasswordStudent = async (req, res) => {
     }
 
     // Convert roll number to uppercase for consistency
-    const rollNumber = rollNumber.toUpperCase();
+    const rollNumber = email.toUpperCase();
 
     // Find the student by roll number
     const student = await User.findOne({ email: rollNumber });
