@@ -76,7 +76,7 @@ export const resetPasswordStudent = async (req, res) => {
     const rollNumber = email.toUpperCase();
 
     // Find the student by roll number
-    const student = await User.findOne({ email: rollNumber });
+    const student = await User.findOne({ email: { $regex: new RegExp(`^${rollNumber}$`, 'i') } });
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
