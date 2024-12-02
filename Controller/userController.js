@@ -22,7 +22,7 @@ export const createUser = async (req, res) => {
 // Student Login API
 export const loginStudent = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password,macId } = req.body;
 
     // Validate email input (roll number)
     if (!email || typeof email !== "string" || email.length !== 10) {
@@ -34,6 +34,7 @@ export const loginStudent = async (req, res) => {
 
     // Debugging log
     console.log("Roll number (email):", rollNumber);
+    console.log("Mac ID (email):", macId);
 
     // Find the student by roll number with case-insensitive search
     const student = await User.findOne({ email: { $regex: new RegExp(`^${rollNumber}$`, 'i') } });
@@ -45,6 +46,9 @@ export const loginStudent = async (req, res) => {
     const isMatch = await argon2.verify(student.password, password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
+    }
+    if(student.macId != macId){
+      return res.status(404).json({message:"error"});
     }
 
     // Respond with student details

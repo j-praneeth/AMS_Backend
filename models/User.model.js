@@ -55,6 +55,7 @@ const userSchema = new mongoose.Schema(
       enum: ["Student", "Faculty", "Admin", "DEO"], // Restricts role to these values
       required: true,
     },
+    macId:{type:String,require:true},
     email: {
       type: String,
       required: true,
