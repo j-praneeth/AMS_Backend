@@ -1,6 +1,16 @@
 import User from "../models/User.model.js";
 import argon2 from "argon2";
 
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Create a new user
 export const createUser = async (req, res) => {
   try {
@@ -22,7 +32,7 @@ export const createUser = async (req, res) => {
 // Student Login API
 export const loginStudent = async (req, res) => {
   try {
-    const { email, password,macId } = req.body;
+    const { email, password, } = req.body;
 
     // Validate email input (roll number)
     if (!email || typeof email !== "string" || email.length !== 10) {
@@ -34,7 +44,7 @@ export const loginStudent = async (req, res) => {
 
     // Debugging log
     console.log("Roll number (email):", rollNumber);
-    console.log("Mac ID (email):", macId);
+    // console.log("Mac ID (email):", macId);
 
     // Find the student by roll number with case-insensitive search
     const student = await User.findOne({ email: { $regex: new RegExp(`^${rollNumber}$`, 'i') } });
@@ -47,9 +57,9 @@ export const loginStudent = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    if(student.macId != macId){
-      return res.status(404).json({message:"error"});
-    }
+    // if(student.macId != macId){
+    //   return res.status(404).json({message:"error"});
+    // }
 
     // Respond with student details
     res.status(200).json({
@@ -259,3 +269,25 @@ export const deleteUser = async (req, res) => {
       .json({ message: "Error deleting user", error: error.message });
   }
 };
+
+// Photo Uploadation
+// Set up storage engine for multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
+// Upload endpoint
+app.post('/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+  }
+  const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+  res.status(200).json({ fileUrl });
+});
