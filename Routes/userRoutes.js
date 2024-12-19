@@ -22,6 +22,7 @@ router.post("/login", loginUser); // Login a user
 router.post("/loginStudent",loginStudent)// Students login API call
 router.post("/reset-password/student", resetPasswordStudent);
 router.post("/reset-password/roles", resetPasswordOtherRoles);
+router.post("/upload");
 
 router.get("/", (req, res) => {
   res.send("User route is working!");
