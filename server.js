@@ -47,5 +47,5 @@ app.get("/", (req, res) => {
 app.use("/api/users", userroute);
 
 // Dynamic Port for Deployment
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port https://localhost:${PORT}/`));
